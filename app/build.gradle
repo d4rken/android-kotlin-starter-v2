@@ -1,0 +1,153 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
+
+def gitSha = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
+def buildTime = new Date().format("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT+1"))
+
+android {
+    def packageName = "eu.darken.androidkotlinstarter"
+
+    compileSdkVersion buildConfig.compileSdk
+
+    defaultConfig {
+        applicationId "${packageName}"
+
+        minSdkVersion buildConfig.minSdk
+        targetSdkVersion buildConfig.targetSdk
+
+        versionCode buildConfig.version.code
+        versionName buildConfig.version.name
+
+        buildConfigField "String", "GITSHA", "\"${gitSha}\""
+        buildConfigField "String", "BUILDTIME", "\"${buildTime}\""
+
+        testInstrumentationRunner "${packageName}.ExampleTestRunner"
+    }
+
+    signingConfigs {
+        release {}
+    }
+    def signingPropFile = new File(System.properties['user.home'], ".appconfig/${packageName}/signing.properties")
+    if (signingPropFile.canRead()) {
+        Properties signingProps = new Properties()
+        signingProps.load(new FileInputStream(signingPropFile))
+        signingConfigs {
+            release {
+                storeFile new File(signingProps['release.storePath'])
+                keyAlias signingProps['release.keyAlias']
+                storePassword signingProps['release.storePassword']
+                keyPassword signingProps['release.keyPassword']
+            }
+        }
+    }
+
+    buildTypes {
+        def proguardRulesRelease = fileTree(dir: "proguard", include: ["*.pro"]).asList().toArray()
+        debug {
+            lintOptions {
+                disable 'TimberTagLength'
+            }
+            ext.enableBugsnag = false
+            minifyEnabled true
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            proguardFiles proguardRulesRelease
+            proguardFiles 'proguard-rules-debug.pro'
+        }
+        release {
+            signingConfig signingConfigs.release
+            lintOptions {
+                abortOnError true
+                fatal 'StopShip'
+                disable 'TimberTagLength'
+            }
+            ext.enableBugsnag = true
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            proguardFiles proguardRulesRelease
+            javaCompileOptions.annotationProcessorOptions.arguments['butterknife.debuggable'] = 'false'
+        }
+        applicationVariants.all { variant ->
+            if (variant.buildType.name == "debug") {
+                variant.mergedFlavor.resourceConfigurations.clear()
+                variant.mergedFlavor.resourceConfigurations.add("en")
+            } else if (variant.buildType.name != "debug") {
+                variant.outputs.each { output ->
+                    output.outputFileName = "${packageName}-v" + defaultConfig.versionName + "(" + defaultConfig.versionCode + ")-" + variant.buildType.name.toUpperCase() + "-" + gitSha + ".apk"
+                }
+            }
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
+
+    // Support libs
+    implementation 'androidx.annotation:annotation:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha01'
+    implementation 'androidx.lifecycle:lifecycle-reactivestreams:2.2.0-alpha01'
+
+    // Crash tracking
+    implementation 'com.bugsnag:bugsnag-android:4.10.0'
+
+    // RX
+    implementation "io.reactivex.rxjava2:rxjava:${versions.rxjava}"
+    implementation "io.reactivex.rxjava2:rxandroid:${versions.rxandroid}"
+    implementation "io.reactivex.rxjava2:rxkotlin:${versions.rxkotlin}"
+
+    implementation "com.jakewharton.rxbinding3:rxbinding:${versions.rxbindings}"
+    implementation "com.jakewharton.rxbinding3:rxbinding-core:${versions.rxbindings}"
+    implementation "com.jakewharton.rxbinding3:rxbinding-appcompat:${versions.rxbindings}"
+    implementation "com.jakewharton.rxbinding3:rxbinding-drawerlayout:${versions.rxbindings}"
+    implementation "com.jakewharton.rxbinding3:rxbinding-leanback:${versions.rxbindings}"
+    implementation "com.jakewharton.rxbinding3:rxbinding-recyclerview:${versions.rxbindings}"
+    implementation "com.jakewharton.rxbinding3:rxbinding-slidingpanelayout:${versions.rxbindings}"
+    implementation "com.jakewharton.rxbinding3:rxbinding-swiperefreshlayout:${versions.rxbindings}"
+    implementation "com.jakewharton.rxbinding3:rxbinding-viewpager:${versions.rxbindings}"
+    implementation "com.jakewharton.rxbinding3:rxbinding-material:${versions.rxbindings}"
+
+    //Dagger
+    kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
+    implementation "com.google.dagger:dagger:${versions.dagger}"
+    implementation "com.google.dagger:dagger-android:${versions.dagger}"
+    implementation "com.google.dagger:dagger-android-support:${versions.dagger}"
+    kapt "com.google.dagger:dagger-android-processor:${versions.dagger}"
+
+    //Butterknife
+    implementation "com.jakewharton:butterknife:${versions.butterknife}"
+    kapt "com.jakewharton:butterknife-compiler:${versions.butterknife}"
+
+    //Timber
+    implementation "com.jakewharton.timber:timber:4.7.1"
+
+    // Testing
+    testImplementation "junit:junit:4.12"
+    testImplementation "org.mockito:mockito-core:2.24.5"
+    testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0'
+    testImplementation 'com.github.tmurakami:dexopener:1.0.2'
+
+    androidTestImplementation "org.mockito:mockito-core:2.24.5"
+    androidTestImplementation 'org.mockito:mockito-android:2.23.0'
+    androidTestImplementation 'com.github.tmurakami:dexopener:1.0.2'
+
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test:rules:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.1.1'
+    androidTestImplementation 'androidx.test.espresso.idling:idling-concurrent:3.1.1'
+
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    kapt 'com.github.bumptech.glide:compiler:4.9.0'
+}
