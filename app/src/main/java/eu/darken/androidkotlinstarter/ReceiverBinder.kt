@@ -8,5 +8,4 @@ import eu.darken.androidkotlinstarter.main.core.receiver.ExampleReceiver
 internal abstract class ReceiverBinder {
     @ContributesAndroidInjector
     internal abstract fun exampleReceiver(): ExampleReceiver
-
 }

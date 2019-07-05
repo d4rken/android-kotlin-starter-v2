@@ -9,5 +9,4 @@ import eu.darken.androidkotlinstarter.main.core.service.ExampleService
 internal abstract class ServiceBinder {
     @ContributesAndroidInjector
     internal abstract fun exampleService(): ExampleService
-
 }

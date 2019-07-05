@@ -7,21 +7,21 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.jakewharton.rxbinding3.view.clicks
-import dagger.android.support.AndroidSupportInjection
 import eu.darken.androidkotlinstarter.R
+import eu.darken.androidkotlinstarter.common.dagger.AutoInject
 import eu.darken.androidkotlinstarter.common.smart.SmartFragment
 import javax.inject.Inject
 
 
-class ExampleFragment : SmartFragment() {
+class ExampleFragment : SmartFragment(), AutoInject {
     companion object {
         fun newInstance(): Fragment = ExampleFragment()
     }
@@ -30,11 +30,10 @@ class ExampleFragment : SmartFragment() {
     @BindView(R.id.emoji_text) lateinit var emojiText: TextView
     @BindView(R.id.fab) lateinit var fab: FloatingActionButton
 
-    @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
-    private lateinit var viewModel: ExampleFragmentViewModel
+    @Inject lateinit var vdcFactory: ViewModelProvider.Factory
+    private val vdc: ExampleFragmentVDC by viewModels { vdcFactory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidSupportInjection.inject(this)
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
@@ -47,11 +46,9 @@ class ExampleFragment : SmartFragment() {
 
     @SuppressLint("CheckResult")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ExampleFragmentViewModel::class.java)
+        fab.clicks().subscribe { vdc.updateEmoji() }
 
-        fab.clicks().subscribe { viewModel.updateEmoji() }
-
-        viewModel.state.observe(this, Observer { emojiText.text = it.emoji })
+        vdc.state.observe(this, Observer { emojiText.text = it.emoji })
 
         super.onViewCreated(view, savedInstanceState)
     }

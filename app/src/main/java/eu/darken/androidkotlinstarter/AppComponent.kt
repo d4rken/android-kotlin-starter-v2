@@ -1,32 +1,26 @@
 package eu.darken.androidkotlinstarter
 
-import android.app.Application
-import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
+import eu.darken.androidkotlinstarter.common.dagger.AssistedInjectModule
+import eu.darken.androidkotlinstarter.common.dagger.VDCFactoryModule
 
 
 @AppComponent.Scope
 @Component(modules = [
     AndroidSupportInjectionModule::class,
+    AssistedInjectModule::class,
     ServiceBinder::class,
     ReceiverBinder::class,
     AndroidModule::class,
     ActivityBinder::class,
-    ViewModelBinder::class
+    VDCFactoryModule::class
 ])
 interface AppComponent : AndroidInjector<App> {
 
-    override fun inject(app: App)
-
-    @Component.Builder
-    interface Builder {
-        @BindsInstance
-        fun application(application: Application): Builder
-
-        fun build(): AppComponent
-    }
+    @Component.Factory
+    interface Factory : AndroidInjector.Factory<App>
 
     @MustBeDocumented
     @javax.inject.Scope
