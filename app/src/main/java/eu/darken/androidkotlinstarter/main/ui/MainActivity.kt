@@ -7,22 +7,23 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import butterknife.ButterKnife
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import eu.darken.androidkotlinstarter.R
 import eu.darken.androidkotlinstarter.common.dagger.AutoInject
+import eu.darken.androidkotlinstarter.common.dagger.VDCFactory
 import eu.darken.androidkotlinstarter.main.ui.fragment.ExampleFragment
+import java.util.*
 import javax.inject.Inject
 
 
 class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, AutoInject {
 
     @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-    @Inject lateinit var vdcFactory: ViewModelProvider.Factory
+    @Inject lateinit var vdcFactory: VDCFactory.Factory
 
-    private val vdc: MainActivityVDC by viewModels { vdcFactory }
+    private val vdc: MainActivityVDC by viewModels { vdcFactory.create(this, null) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.BaseAppTheme_NoActionBar)
@@ -52,7 +53,10 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, AutoInject
 
     fun showExampleFragment() {
         var fragment = supportFragmentManager.findFragmentById(R.id.content_frame)
-        if (fragment == null) fragment = ExampleFragment.newInstance()
+        if (fragment == null) {
+            fragment = ExampleFragment.newInstance()
+            fragment.arguments = Bundle().apply { putString("fragmentArg", UUID.randomUUID().toString()) }
+        }
         supportFragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commitAllowingStateLoss()
     }
 }

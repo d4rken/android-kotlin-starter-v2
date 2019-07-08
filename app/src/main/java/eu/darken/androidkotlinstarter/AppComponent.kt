@@ -4,7 +4,6 @@ import dagger.Component
 import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
 import eu.darken.androidkotlinstarter.common.dagger.AssistedInjectModule
-import eu.darken.androidkotlinstarter.common.dagger.VDCFactoryModule
 
 
 @AppComponent.Scope
@@ -14,8 +13,7 @@ import eu.darken.androidkotlinstarter.common.dagger.VDCFactoryModule
     ServiceBinder::class,
     ReceiverBinder::class,
     AndroidModule::class,
-    ActivityBinder::class,
-    VDCFactoryModule::class
+    ActivityBinder::class
 ])
 interface AppComponent : AndroidInjector<App> {
 

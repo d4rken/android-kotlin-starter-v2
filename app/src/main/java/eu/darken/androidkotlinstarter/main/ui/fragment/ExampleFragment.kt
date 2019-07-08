@@ -9,7 +9,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -17,6 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.jakewharton.rxbinding3.view.clicks
 import eu.darken.androidkotlinstarter.R
 import eu.darken.androidkotlinstarter.common.dagger.AutoInject
+import eu.darken.androidkotlinstarter.common.dagger.VDCFactory
 import eu.darken.androidkotlinstarter.common.smart.SmartFragment
 import javax.inject.Inject
 
@@ -30,8 +30,8 @@ class ExampleFragment : SmartFragment(), AutoInject {
     @BindView(R.id.emoji_text) lateinit var emojiText: TextView
     @BindView(R.id.fab) lateinit var fab: FloatingActionButton
 
-    @Inject lateinit var vdcFactory: ViewModelProvider.Factory
-    private val vdc: ExampleFragmentVDC by viewModels { vdcFactory }
+    @Inject lateinit var vdcFactory: VDCFactory.Factory
+    private val vdc: ExampleFragmentVDC by viewModels { vdcFactory.create(this, arguments) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

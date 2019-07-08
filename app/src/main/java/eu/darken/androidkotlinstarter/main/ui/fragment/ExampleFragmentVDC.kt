@@ -6,7 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import eu.darken.androidkotlinstarter.common.dagger.VDCAssistedFactory
+import eu.darken.androidkotlinstarter.common.dagger.SavedStateVDCFactory
 import eu.darken.androidkotlinstarter.main.core.SomeRepo
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Observable
@@ -25,6 +25,7 @@ class ExampleFragmentVDC @AssistedInject constructor(
         Timber.d("ViewModel: %s", this)
         Timber.d("SavedStateHandle: %s", handle)
         Timber.d("Persisted value: %s", handle.get<Long>("lastValue"))
+        Timber.d("Default args: %s", handle.get<String>("fragmentArg"))
     }
 
     private val dataSource = PublishSubject.create<State>()
@@ -59,5 +60,5 @@ class ExampleFragmentVDC @AssistedInject constructor(
     }
 
     @AssistedInject.Factory
-    interface Factory : VDCAssistedFactory<ExampleFragmentVDC>
+    interface Factory : SavedStateVDCFactory<ExampleFragmentVDC>
 }
