@@ -9,7 +9,7 @@ import androidx.savedstate.SavedStateRegistryOwner
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 
-class VDCFactory @AssistedInject constructor(
+class VDCSource @AssistedInject constructor(
         private val creators: @JvmSuppressWildcards Map<Class<out ViewModel>, SavedStateVDCFactory<out ViewModel>>,
         @Assisted savedStateOwner: SavedStateRegistryOwner,
         @Assisted defaultSavedState: Bundle?

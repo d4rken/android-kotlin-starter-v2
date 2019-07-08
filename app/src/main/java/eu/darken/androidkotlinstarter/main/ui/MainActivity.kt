@@ -12,7 +12,7 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import eu.darken.androidkotlinstarter.R
 import eu.darken.androidkotlinstarter.common.dagger.AutoInject
-import eu.darken.androidkotlinstarter.common.dagger.VDCFactory
+import eu.darken.androidkotlinstarter.common.dagger.VDCSource
 import eu.darken.androidkotlinstarter.main.ui.fragment.ExampleFragment
 import java.util.*
 import javax.inject.Inject
@@ -21,9 +21,9 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, AutoInject {
 
     @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-    @Inject lateinit var vdcFactory: VDCFactory.Factory
+    @Inject lateinit var vdcSource: VDCSource.Factory
 
-    private val vdc: MainActivityVDC by viewModels { vdcFactory.create(this, null) }
+    private val vdc: MainActivityVDC by viewModels { vdcSource.create(this, null) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.BaseAppTheme_NoActionBar)
