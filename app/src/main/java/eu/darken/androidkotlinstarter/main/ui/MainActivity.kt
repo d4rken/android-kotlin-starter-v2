@@ -3,7 +3,6 @@ package eu.darken.androidkotlinstarter.main.ui
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -12,7 +11,8 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import eu.darken.androidkotlinstarter.R
 import eu.darken.androidkotlinstarter.common.dagger.AutoInject
-import eu.darken.androidkotlinstarter.common.dagger.VDCSource
+import eu.darken.androidkotlinstarter.common.vdc.VDCSource
+import eu.darken.androidkotlinstarter.common.vdc.vdcs
 import eu.darken.androidkotlinstarter.main.ui.fragment.ExampleFragment
 import java.util.*
 import javax.inject.Inject
@@ -21,9 +21,10 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, AutoInject {
 
     @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-    @Inject lateinit var vdcSource: VDCSource.Factory
+    override fun supportFragmentInjector(): DispatchingAndroidInjector<Fragment> = dispatchingAndroidInjector
 
-    private val vdc: MainActivityVDC by viewModels { vdcSource.create(this, null) }
+    @Inject lateinit var vdcSource: VDCSource.Factory
+    private val vdc: MainActivityVDC by vdcs { vdcSource }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.BaseAppTheme_NoActionBar)
@@ -49,7 +50,6 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector, AutoInject
         }
     }
 
-    override fun supportFragmentInjector(): DispatchingAndroidInjector<Fragment> = dispatchingAndroidInjector
 
     fun showExampleFragment() {
         var fragment = supportFragmentManager.findFragmentById(R.id.content_frame)

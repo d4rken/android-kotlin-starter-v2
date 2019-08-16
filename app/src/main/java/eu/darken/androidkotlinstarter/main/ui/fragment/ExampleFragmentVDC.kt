@@ -1,25 +1,37 @@
 package eu.darken.androidkotlinstarter.main.ui.fragment
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.LiveDataReactiveStreams
+import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import eu.darken.androidkotlinstarter.common.dagger.SavedStateVDCFactory
+import eu.darken.androidkotlinstarter.common.Stater
+import eu.darken.androidkotlinstarter.common.vdc.SmartVDC
+import eu.darken.androidkotlinstarter.common.vdc.VDCFactory
 import eu.darken.androidkotlinstarter.main.core.SomeRepo
-import io.reactivex.BackpressureStrategy
 import io.reactivex.Observable
-import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 
 class ExampleFragmentVDC @AssistedInject constructor(
-        private val someRepo: SomeRepo,
-        @Assisted private val handle: SavedStateHandle
-) : ViewModel() {
+        @Assisted private val handle: SavedStateHandle,
+        @Assisted private val arguments: Bundle?,
+        private val someRepo: SomeRepo
+) : SmartVDC() {
+
+    private val emojiObs: Observable<String> = Observables.combineLatest(someRepo.testEmojis, someRepo.testCounter)
+            .subscribeOn(Schedulers.io())
+            .map {
+                handle.set("lastValue", it.second)
+                "${it.first} ${it.second}"
+            }
+            .doOnNext { emojiVal ->
+                stater.update { it.copy(emoji = emojiVal) }
+            }
+
+    private val stater = Stater(State())
+            .addLiveDep { emojiObs.subscribe() }
+    val state = stater.liveData
 
     init {
         Timber.d("ViewModel: %s", this)
@@ -28,37 +40,14 @@ class ExampleFragmentVDC @AssistedInject constructor(
         Timber.d("Default args: %s", handle.get<String>("fragmentArg"))
     }
 
-    private val dataSource = PublishSubject.create<State>()
-    private var dataSub: Disposable = createDataProcess()
-
-    val state = dataSource
-            .subscribeOn(Schedulers.computation())
-            .toLiveData()
-
-    private fun createDataProcess(): Disposable = Observables
-            .combineLatest(someRepo.testEmojis, someRepo.testCounter)
-            .map {
-                handle.set("lastValue", it.second)
-                return@map State(emoji = "${it.first} ${it.second}")
-            }
-            .subscribe { dataSource.onNext(it) }
-
     fun updateEmoji() {
-        dataSub.dispose()
-        dataSub = createDataProcess()
+        someRepo.resetTo(0)
     }
 
-    override fun onCleared() {
-        dataSub.dispose()
-        super.onCleared()
-    }
-
-    data class State(val emoji: String)
-
-    fun <T> Observable<T>.toLiveData(): LiveData<T> {
-        return LiveDataReactiveStreams.fromPublisher(this.toFlowable(BackpressureStrategy.ERROR))
-    }
+    data class State(val emoji: String = "?")
 
     @AssistedInject.Factory
-    interface Factory : SavedStateVDCFactory<ExampleFragmentVDC>
+    interface Factory : VDCFactory<ExampleFragmentVDC> {
+        fun create(handle: SavedStateHandle, arguments: Bundle?): ExampleFragmentVDC
+    }
 }
