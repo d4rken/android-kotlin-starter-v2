@@ -1,4 +1,4 @@
-package eu.darken.bb.common.dagger
+package eu.darken.androidkotlinstarter.common.dagger
 
 import javax.inject.Scope
 

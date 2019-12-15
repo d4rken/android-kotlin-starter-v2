@@ -12,19 +12,6 @@ import javax.inject.Inject
 
 open class App : Application(), HasActivityInjector, HasServiceInjector, HasBroadcastReceiverInjector {
 
-    companion object {
-        internal val TAG = logTag("ExampleApp")
-
-        fun logTag(vararg tags: String): String {
-            val sb = StringBuilder()
-            for (i in tags.indices) {
-                sb.append(tags[i])
-                if (i < tags.size - 1) sb.append(":")
-            }
-            return sb.toString()
-        }
-    }
-
     @Inject lateinit var appComponent: AppComponent
     @Inject lateinit var activityInjector: DispatchingAndroidInjector<Activity>
     @Inject lateinit var receiverInjector: DispatchingAndroidInjector<BroadcastReceiver>
@@ -44,4 +31,17 @@ open class App : Application(), HasActivityInjector, HasServiceInjector, HasBroa
     override fun serviceInjector(): AndroidInjector<Service> = serviceInjector
 
     override fun broadcastReceiverInjector(): AndroidInjector<BroadcastReceiver> = receiverInjector
+
+    companion object {
+        internal val TAG = logTag("ExampleApp")
+
+        fun logTag(vararg tags: String): String {
+            val sb = StringBuilder()
+            for (i in tags.indices) {
+                sb.append(tags[i])
+                if (i < tags.size - 1) sb.append(":")
+            }
+            return sb.toString()
+        }
+    }
 }

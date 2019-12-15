@@ -29,7 +29,9 @@ class MainActivityVDC @AssistedInject constructor(
         stater.update { it.copy(ready = true) }
     }
 
-    data class State(val ready: Boolean = false)
+    data class State(
+            val ready: Boolean = false
+    )
 
     @AssistedInject.Factory
     interface Factory : SavedStateVDCFactory<MainActivityVDC>

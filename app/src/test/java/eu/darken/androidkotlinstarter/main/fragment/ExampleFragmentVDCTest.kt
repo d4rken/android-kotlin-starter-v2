@@ -34,7 +34,7 @@ class ExampleFragmentVDCTest : BaseTest() {
         val emojiPub = BehaviorSubject.create<String>()
         every { repo.testCounter } returns counterPub
         every { repo.testEmojis } returns emojiPub
-        val vdc = ExampleFragmentVDC(SavedStateHandle(), null, repo)
+        val vdc = ExampleFragmentVDC(SavedStateHandle(), "testarg", repo)
 
         vdc.state.value shouldBe null
 

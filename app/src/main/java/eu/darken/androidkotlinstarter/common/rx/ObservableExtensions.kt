@@ -1,4 +1,4 @@
-package eu.darken.bb.common.rx
+package eu.darken.androidkotlinstarter.common.rx
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams

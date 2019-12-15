@@ -4,6 +4,6 @@ import android.os.Binder
 
 import javax.inject.Inject
 
-//@ExampleServiceComponent.Scope
-class ExampleBinder @Inject
-constructor(service: ExampleService) : Binder()
+class ExampleBinder @Inject constructor(
+        service: ExampleService
+) : Binder()

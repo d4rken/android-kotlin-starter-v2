@@ -7,6 +7,8 @@ import dagger.multibindings.IntoMap
 import eu.darken.androidkotlinstarter.common.vdc.VDC
 import eu.darken.androidkotlinstarter.common.vdc.VDCFactory
 import eu.darken.androidkotlinstarter.common.vdc.VDCKey
+import eu.darken.androidkotlinstarter.main.ui.anotherfrag.AnotherFragment
+import eu.darken.androidkotlinstarter.main.ui.anotherfrag.AnotherFragmentModule
 import eu.darken.androidkotlinstarter.main.ui.fragment.ExampleFragment
 import eu.darken.androidkotlinstarter.main.ui.fragment.ExampleFragmentModule
 
@@ -20,5 +22,8 @@ abstract class MainActivityModule {
 
     @ContributesAndroidInjector(modules = [ExampleFragmentModule::class])
     abstract fun exampleFragment(): ExampleFragment
+
+    @ContributesAndroidInjector(modules = [AnotherFragmentModule::class])
+    abstract fun anotherFragment(): AnotherFragment
 
 }

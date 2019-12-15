@@ -1,6 +1,6 @@
 package eu.darken.androidkotlinstarter.main.core
 
-import eu.darken.bb.common.dagger.PerApp
+import eu.darken.androidkotlinstarter.common.dagger.PerApp
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit

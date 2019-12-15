@@ -1,10 +1,11 @@
 package eu.darken.androidkotlinstarter.main.ui.fragment
 
-import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
+import com.jakewharton.rx.replayingShare
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import eu.darken.androidkotlinstarter.common.Stater
+import eu.darken.androidkotlinstarter.common.rx.withScopeVDC
 import eu.darken.androidkotlinstarter.common.vdc.SmartVDC
 import eu.darken.androidkotlinstarter.common.vdc.VDCFactory
 import eu.darken.androidkotlinstarter.main.core.SomeRepo
@@ -15,22 +16,19 @@ import timber.log.Timber
 
 class ExampleFragmentVDC @AssistedInject constructor(
         @Assisted private val handle: SavedStateHandle,
-        @Assisted private val arguments: Bundle?,
+        @Assisted private val exampleArg: String,
         private val someRepo: SomeRepo
 ) : SmartVDC() {
 
-    private val emojiObs: Observable<String> = Observables.combineLatest(someRepo.testEmojis, someRepo.testCounter)
+    private val emojiData: Observable<String> = Observables.combineLatest(someRepo.testEmojis, someRepo.testCounter)
             .subscribeOn(Schedulers.io())
             .map {
                 handle.set("lastValue", it.second)
                 "${it.first} ${it.second}"
             }
-            .doOnNext { emojiVal ->
-                stater.update { it.copy(emoji = emojiVal) }
-            }
+            .replayingShare()
 
     private val stater = Stater(State())
-            .addLiveDep { emojiObs.subscribe() }
     val state = stater.liveData
 
     init {
@@ -38,16 +36,24 @@ class ExampleFragmentVDC @AssistedInject constructor(
         Timber.d("SavedStateHandle: %s", handle)
         Timber.d("Persisted value: %s", handle.get<Long>("lastValue"))
         Timber.d("Default args: %s", handle.get<String>("fragmentArg"))
+
+        emojiData
+                .subscribe { emojiVal ->
+                    stater.update { it.copy(emoji = emojiVal) }
+                }
+                .withScopeVDC(this)
     }
 
     fun updateEmoji() {
         someRepo.resetTo(0)
     }
 
-    data class State(val emoji: String = "?")
+    data class State(
+            val emoji: String = "?"
+    )
 
     @AssistedInject.Factory
     interface Factory : VDCFactory<ExampleFragmentVDC> {
-        fun create(handle: SavedStateHandle, arguments: Bundle?): ExampleFragmentVDC
+        fun create(handle: SavedStateHandle, exampleArg: String): ExampleFragmentVDC
     }
 }

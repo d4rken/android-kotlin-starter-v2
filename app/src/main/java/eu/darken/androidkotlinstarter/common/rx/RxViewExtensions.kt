@@ -1,4 +1,4 @@
-package eu.darken.bb.common.rx
+package eu.darken.androidkotlinstarter.common.rx
 
 import android.view.View
 import com.jakewharton.rxbinding3.view.clicks

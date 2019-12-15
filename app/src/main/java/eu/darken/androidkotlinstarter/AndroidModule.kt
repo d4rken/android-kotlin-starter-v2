@@ -9,7 +9,7 @@ import android.preference.PreferenceManager
 
 import dagger.Module
 import dagger.Provides
-import eu.darken.bb.common.dagger.PerApp
+import eu.darken.androidkotlinstarter.common.dagger.PerApp
 
 
 @Module

@@ -4,7 +4,7 @@ import dagger.Component
 import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
 import eu.darken.androidkotlinstarter.common.dagger.AssistedInjectModule
-import eu.darken.bb.common.dagger.PerApp
+import eu.darken.androidkotlinstarter.common.dagger.PerApp
 
 
 @PerApp
