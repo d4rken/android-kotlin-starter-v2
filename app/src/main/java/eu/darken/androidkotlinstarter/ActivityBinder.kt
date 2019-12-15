@@ -8,6 +8,9 @@ import eu.darken.androidkotlinstarter.main.ui.MainActivityModule
 
 @Module
 abstract class ActivityBinder {
+
     @ContributesAndroidInjector(modules = [MainActivityModule::class])
     abstract fun mainActivity(): MainActivity
+
+
 }

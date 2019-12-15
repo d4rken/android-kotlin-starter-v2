@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.media.AudioManager
 import android.preference.PreferenceManager
-
 import dagger.Module
 import dagger.Provides
 import eu.darken.androidkotlinstarter.common.dagger.PerApp
@@ -17,7 +16,9 @@ class AndroidModule {
 
     @Provides
     @PerApp
-    fun context(app: Application): Context = app.applicationContext
+    fun context(app: Application): Context {
+        return app.applicationContext
+    }
 
     @Provides
     @PerApp

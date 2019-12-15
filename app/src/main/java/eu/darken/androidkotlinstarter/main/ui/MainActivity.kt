@@ -29,7 +29,6 @@ class MainActivity : SmartActivity(), HasSupportFragmentInjector, AutoInject {
     @Inject lateinit var vdcSource: VDCSource.Factory
     private val vdc: MainActivityVDC by vdcs { vdcSource }
 
-
     private val navController by lazy { findNavController(R.id.nav_host_fragment) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
