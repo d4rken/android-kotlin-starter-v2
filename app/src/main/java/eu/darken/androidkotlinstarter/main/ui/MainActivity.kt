@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import butterknife.ButterKnife
+import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.HasSupportFragmentInjector
+import dagger.android.HasAndroidInjector
 import eu.darken.androidkotlinstarter.R
 import eu.darken.androidkotlinstarter.common.dagger.AutoInject
 import eu.darken.androidkotlinstarter.common.navigation.isGraphSet
@@ -21,10 +21,10 @@ import eu.darken.androidkotlinstarter.common.vdc.vdcs
 import javax.inject.Inject
 
 
-class MainActivity : SmartActivity(), HasSupportFragmentInjector, AutoInject {
+class MainActivity : SmartActivity(), HasAndroidInjector, AutoInject {
 
-    @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
-    override fun supportFragmentInjector(): DispatchingAndroidInjector<Fragment> = dispatchingAndroidInjector
+    @Inject lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Any>
+    override fun androidInjector(): AndroidInjector<Any> = dispatchingAndroidInjector
 
     @Inject lateinit var vdcSource: VDCSource.Factory
     private val vdc: MainActivityVDC by vdcs { vdcSource }

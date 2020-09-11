@@ -1,21 +1,20 @@
 package eu.darken.androidkotlinstarter
 
-import android.app.Activity
 import android.app.Application
-import android.app.Service
-import android.content.BroadcastReceiver
-import dagger.android.*
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasAndroidInjector
 import eu.darken.androidkotlinstarter.common.dagger.AppInjector
 import timber.log.Timber
 import javax.inject.Inject
 
 
-open class App : Application(), HasActivityInjector, HasServiceInjector, HasBroadcastReceiverInjector {
+open class App : Application(), HasAndroidInjector {
 
     @Inject lateinit var appComponent: AppComponent
-    @Inject lateinit var activityInjector: DispatchingAndroidInjector<Activity>
-    @Inject lateinit var receiverInjector: DispatchingAndroidInjector<BroadcastReceiver>
-    @Inject lateinit var serviceInjector: DispatchingAndroidInjector<Service>
+    @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
+
+    override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     override fun onCreate() {
         super.onCreate()
@@ -25,12 +24,6 @@ open class App : Application(), HasActivityInjector, HasServiceInjector, HasBroa
 
         Timber.tag(TAG).d("onCreate() done!")
     }
-
-    override fun activityInjector(): AndroidInjector<Activity> = activityInjector
-
-    override fun serviceInjector(): AndroidInjector<Service> = serviceInjector
-
-    override fun broadcastReceiverInjector(): AndroidInjector<BroadcastReceiver> = receiverInjector
 
     companion object {
         internal val TAG = logTag("ExampleApp")
